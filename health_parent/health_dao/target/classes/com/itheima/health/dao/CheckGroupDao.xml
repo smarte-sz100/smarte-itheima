@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace: 名称空间，接口的全限定名-->
+<mapper namespace="com.itheima.health.dao.CheckGroupDao">
+    <!--添加检查组-->
+    <insert id="add" parameterType="CheckGroup">
+        <selectKey resultType="int" order="AFTER" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into t_checkgroup (code, name, helpCode, sex, remark, attention)
+        values( #{code}, #{name}, #{helpCode}, #{sex}, #{remark}, #{attention})
+    </insert>
+    <!--选中检查项id-->
+    <insert id="addCheckGroupCheckItem" parameterType="int">
+        insert into t_checkgroup_checkitem (checkgroup_id,checkitem_id)
+        values(#{checkGroupId},#{checkitemId})
+    </insert>
+    <!--检查组分页查询-->
+
+    <select id="findPage" parameterType="string" resultType="CheckGroup">
+        select * From t_checkgroup
+        <where>
+            <if test="value != null and value.length > 0">
+                code like #{queryString} or name like #{queryString} or helpCode like #{queryString}
+            </if>
+        </where>
+    </select>
+
+    <!--通过id查询-->
+    <select id="findById" parameterType="int" resultType="checkgroup">
+        select * from t_checkgroup where id= #{id}
+    </select>
+    <!--通过检查组id查询选中的检查项id集合-->
+    <select id="findCheckItemIdsByCheckGroupId" parameterType="int" resultType="int">
+        select checkitem_id  from t_checkgroup_checkitem  where checkgroup_id=#{id}
+    </select>
+    <!--更新检查组-->
+    <update id="update" parameterType="CheckGroup">
+        update t_checkgroup set
+         code=#{code},
+        name=#{name},
+        helpCode=#{helpCode},
+        sex=#{sex},
+        remark=#{remark},
+        attention=#{attention}
+      where id=#{id}
+    </update>
+  <!--//删除旧关系-->
+    <delete id="deleteCheckGroupCheckItem" parameterType="int"   >
+        delete from t_checkgroup_checkitem where checkgroup_id=#{id}
+    </delete>
+
+    <!--通过检查组id统计个数-->
+    <select id="findSetmealCountByCheckGroupId" parameterType="int" resultType="int">
+        select count(1) from t_setmeal_checkgroup where checkgroup_id=#{id}
+    </select>
+    <!--删除检查组-->
+    <delete id="deleteById" parameterType="int">
+        delete from t_checkgroup where id=#{id}
+    </delete>
+
+    <!--查询检查组-->
+    <select id="findAll"  resultType="CheckGroup">
+        select *from t_checkgroup
+    </select>
+</mapper>
